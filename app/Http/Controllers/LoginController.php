@@ -1,47 +1,47 @@
 <?php
-	
 
-	namespace App\Http\Controllers;
-	
+namespace App\Http\Controllers;
 
-	use Illuminate\Http\Request;
-	use App\Models\User;
-	use Illuminate\Support\Facades\Hash;
-	
+use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
-	class LoginController extends Controller
-	{
-	    public function show(Request $request)
-	    {
-	        return view('login');
-	    }
-	
 
-	    public function login(Request $request)
-	    {
-	        // dd($request);
-	        // login
-	        $email = $request->email;
-	        $password = $request->password;
-	
+class LoginController extends Controller
+{
+    public function show(Request $request)
+    {
+        return view('login');
+    }
 
-	    
-	        $user = User::where('email', $email)->first();
-	        $hashedPassword = $user->password;
-	
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-	        if (Hash::check($password, $hashedPassword)) {
-	            return "Berhasil Login";
-	        } else {
-	            return "Gagal Login";
-	        }
-	
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
 
-	
+            return redirect()->intended('/');
+        }
 
-	
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
+    }
 
-	        return $user;
-	    }
-	}
+    public function logout(Request $request): RedirectResponse
+    {
+        Auth::logout();
 
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
+}
