@@ -1,5 +1,8 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="images/logo.png" alt="Logo" width="60" height="60" class="d-inline-block align-text-top">
+        </a>
         <a class="navbar-brand" href="/">Navbar</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

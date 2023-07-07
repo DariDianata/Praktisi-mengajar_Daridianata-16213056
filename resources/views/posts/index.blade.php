@@ -19,7 +19,7 @@
                                 <tr>
                                     <td>{{ $post->title }}</td>
                                     <td>
-                                        <img src="{{ asset('storage/ ' . $post->post) }}" width="100px" height="100px" class="img-thumbnail" alt="{{ $post->title }}">
+                                        <img src="{{ asset('storage/' . $post->thumbnail) }}" width="100px" height="100px" class="img-thumbnail" alt="{{ $post->title }}">
                                     </td>
                                     <td>{{ Str::limit($post->body, 50) }}</td>
                                     <td>

@@ -32,27 +32,30 @@ class PostController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    $request->validate([
-        'title' => 'required|min:4',
-        'thumbnail' => 'required|image|mimes:jpeg,png|max:2048',
-        'body' => 'required|string'
-    ]);
+    {
+        $request->validate([
+            'title' => 'required|min:4',
+            'thumbnail' => 'required|image|mimes:jpeg,png|max:2048',
+            'body' => 'required|string'
+        ]);
 
-    $data = $request->all();
-    $data['title'] = Str::title($request->title);
+        $data = $request->all();
 
-    if ($request->hasFile('thumbnail')) {
-        $thumbnailPath = $request->file('thumbnail')->store('post');
-        $data['thumbnail'] = $thumbnailPath;
+        if ($request->hasFile('thumbnail')) {
+            $thumbnailPath = $request->file('thumbnail')->store('post', 'public');
+            $data['thumbnail'] = $thumbnailPath;
+        }
+
+        $data['title'] = Str::title($request->title);
+
+        $post = new Post;
+        $post->title = $data['title'];
+        $post->thumbnail = $data['thumbnail'];
+        $post->body = $data['body'];
+        $post->save();
+
+        return redirect('posts')->with('success', 'Berhasil membuat artikel');
     }
-
-    $data['body'] = $request->body;
-
-    Post::create($data);
-    return redirect('posts')->with('success', 'Berhasil membuat artikel');
-}
-
 
     /**
      * Display the specified resource.
@@ -89,10 +92,10 @@ class PostController extends Controller
 
         if ($request->hasFile('thumbnail')) {
             // Hapus thumbnail lama
-            Storage::delete($post->thumbnail);
-            
+            Storage::disk('public')->delete($post->thumbnail);
+
             // Simpan thumbnail baru
-            $thumbnailPath = $request->file('thumbnail')->store('post');
+            $thumbnailPath = $request->file('thumbnail')->store('post', 'public');
             $post->thumbnail = $thumbnailPath;
         }
 
@@ -110,7 +113,7 @@ class PostController extends Controller
         $post = Post::find($id);
 
         // Hapus thumbnail
-        Storage::delete($post->thumbnail);
+        Storage::disk('public')->delete($post->thumbnail);
 
         $post->delete();
 
